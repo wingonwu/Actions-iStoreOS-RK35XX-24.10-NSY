@@ -255,6 +255,12 @@
 		regulator-boot-on;
 	};
 
+	xpcs: syscon@fda00000 {
+		compatible = "rockchip,rk3568-xpcs", "syscon";
+		reg = <0x0 0xfda00000 0x0 0x200000>;
+		status = "disabled";
+	};
+
 	gmac0_xpcsclk: xpcs-gmac0-clock {
 		compatible = "fixed-clock";
 		clock-frequency = <125000000>;
