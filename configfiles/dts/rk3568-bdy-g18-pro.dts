@@ -777,9 +777,9 @@
 	phy-mode = "sgmii";
 	rockchip,pipegrf = <&pipegrf>;
 	rockchip,xpcs = <&xpcs>;
-	//snps,reset-gpio = <&gpio2 RK_PC2 GPIO_ACTIVE_LOW>;
-	//snps,reset-active-low;
-	//snps,reset-delays-us = <0 20000 100000>;
+	snps,reset-gpio = <&gpio2 RK_PC2 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	snps,reset-delays-us = <0 20000 100000>;
 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>;
 	assigned-clock-parents = <&gmac1_xpcsclk>;
 	pinctrl-names = "default";
