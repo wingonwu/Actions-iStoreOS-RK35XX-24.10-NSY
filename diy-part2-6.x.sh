@@ -85,3 +85,25 @@ cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3588-orangepi-5-plus.dts target/linux/
 cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3568-nsy-g68-plus.dts target/linux/rockchip/dts/rk3568/rk3568-nsy-g68-plus.dts
 cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3568-nsy-g16-plus.dts target/linux/rockchip/dts/rk3568/rk3568-nsy-g16-plus.dts
 cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3568-bdy-g18-pro.dts target/linux/rockchip/dts/rk3568/rk3568-bdy-g18-pro.dts
+
+# 添加支持 sgmii 补丁
+# 下载补丁文件
+curl -o target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
+
+curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch
+
+curl -o target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
+
+curl -o target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
+
+# 验证下载文件
+
+ls -l target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
+ls -l target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch
+ls -l target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
+ls -l target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
+
