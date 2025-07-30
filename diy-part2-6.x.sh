@@ -91,7 +91,7 @@ cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3568-bdy-g18-pro.dts target/linux/rock
 curl -o target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
 
-curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
+# curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch
 
 curl -o target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch \
