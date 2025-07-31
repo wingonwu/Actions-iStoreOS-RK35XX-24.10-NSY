@@ -88,15 +88,37 @@ cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3568-bdy-g18-pro.dts target/linux/rock
 
 # 添加支持 sgmii 补丁
 # 下载补丁文件
+curl -o target/linux/rockchip/patches-6.6/300-nvmem-rockchip-otp-Add-support-for-rk3568-otp.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/300-nvmem-rockchip-otp-Add-support-for-rk3568-otp.patch
+curl -o target/linux/rockchip/patches-6.6/301-arm64-dts-rockchip-rk3568-Add-otp-device-node.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/301-arm64-dts-rockchip-rk3568-Add-otp-device-node.patch
+
+curl -o target/linux/rockchip/patches-6.6/304-01-arm64-dts-rockchip-add-cpuinfo-support-for-rk3328.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/304-01-arm64-dts-rockchip-add-cpuinfo-support-for-rk3328.patch
+curl -o target/linux/rockchip/patches-6.6/304-02-arm64-dts-rockchip-add-cpuinfo-support-for-rk3399.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/304-02-arm64-dts-rockchip-add-cpuinfo-support-for-rk3399.patch
+curl -o target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch
+  
+curl -o target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch
+curl -o target/linux/rockchip/patches-6.6/701-1-net-stmmac-release-gpio-for-mdio-reset.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-1-net-stmmac-release-gpio-for-mdio-reset.patch
+curl -o target/linux/rockchip/patches-6.6/701-2-net-stmmac-fix-warning-on-release-NULL-gpio-desc.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-2-net-stmmac-fix-warning-on-release-NULL-gpio-desc.patch
+curl -o target/linux/rockchip/patches-6.6/702-net-stmmac-release-reset-controller.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/702-net-stmmac-release-reset-controller.patch
+curl -o target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch
+curl -o target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch
+  
 curl -o target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
-
-# curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
+curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch
-
 curl -o target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
-
 curl -o target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
 
