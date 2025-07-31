@@ -112,6 +112,10 @@ curl -o target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch
 curl -o target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch
+curl -o target/linux/rockchip/patches-6.6/710-ethernet-stmicro-stmmac-Add-SGMII-QSGMII-support-for.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/710-ethernet-stmicro-stmmac-Add-SGMII-QSGMII-support-for.patch
+curl -o target/linux/rockchip/patches-6.6/711-arm64-dts-rockchip-rk3568-Add-xpcs-support.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/711-arm64-dts-rockchip-rk3568-Add-xpcs-support.patch
   
 curl -o target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
