@@ -102,16 +102,10 @@ curl -o target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-
   
 curl -o target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch
-curl -o target/linux/rockchip/patches-6.6/701-1-net-stmmac-release-gpio-for-mdio-reset.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-1-net-stmmac-release-gpio-for-mdio-reset.patch
-curl -o target/linux/rockchip/patches-6.6/701-2-net-stmmac-fix-warning-on-release-NULL-gpio-desc.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-2-net-stmmac-fix-warning-on-release-NULL-gpio-desc.patch
-curl -o target/linux/rockchip/patches-6.6/702-net-stmmac-release-reset-controller.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/702-net-stmmac-release-reset-controller.patch
-curl -o target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-1-dwmac-rk-tool.patch
-curl -o target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-2-dwmac-rk-tool.patch
+curl -o target/linux/rockchip/patches-6.6/701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch
+curl -o target/linux/rockchip/patches-6.6/703-arm64-rk3568-update-gicv3-its-and-pci-msi-map.patch \
+  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/703-arm64-rk3568-update-gicv3-its-and-pci-msi-map.patch
 curl -o target/linux/rockchip/patches-6.6/710-ethernet-stmicro-stmmac-Add-SGMII-QSGMII-support-for.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/710-ethernet-stmicro-stmmac-Add-SGMII-QSGMII-support-for.patch
 curl -o target/linux/rockchip/patches-6.6/711-arm64-dts-rockchip-rk3568-Add-xpcs-support.patch \
