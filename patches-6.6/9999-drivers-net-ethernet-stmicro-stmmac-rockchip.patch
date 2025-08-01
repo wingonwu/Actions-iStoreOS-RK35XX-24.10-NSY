@@ -1608,29 +1608,6 @@
 +
 +	return 0;
 +}
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-+/*
-+ * Copyright (c) 2020 Fuzhou Rockchip Electronics Co., Ltd
-+ */
-+
-+#ifndef __DWMAC_RK_TOOL_H__
-+#define __DWMAC_RK_TOOL_H__
-+
-+#include <linux/phy.h>
-+#include "stmmac.h"
-+
-+void dwmac_rk_set_rgmii_delayline(struct stmmac_priv *priv, int tx_delay, int rx_delay);
-+void dwmac_rk_get_rgmii_delayline(struct stmmac_priv *priv, int *tx_delay, int *rx_delay);
-+int dwmac_rk_get_phy_interface(struct stmmac_priv *priv);
-+
-+int dwmac_rk_create_loopback_sysfs(struct device *dev);
-+int dwmac_rk_remove_loopback_sysfs(struct device *device);
-+
-+#endif /* __DWMAC_RK_TOOL_H__ */
-+
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 @@ -25,6 +25,7 @@
@@ -1654,47 +1631,6 @@
  	}
  
  	ret = devm_clk_bulk_get_optional(dev, bsp_priv->num_clks,
-@@ -2002,6 +2008,40 @@ static void rk_fix_speed(void *priv, uns
- 	}
- }
- 
-+void dwmac_rk_set_rgmii_delayline(struct stmmac_priv *priv,
-+				  int tx_delay, int rx_delay)
-+{
-+	struct rk_priv_data *bsp_priv = priv->plat->bsp_priv;
-+
-+	if (bsp_priv->ops->set_to_rgmii) {
-+		bsp_priv->ops->set_to_rgmii(bsp_priv, tx_delay, rx_delay);
-+		bsp_priv->tx_delay = tx_delay;
-+		bsp_priv->rx_delay = rx_delay;
-+	}
-+}
-+EXPORT_SYMBOL(dwmac_rk_set_rgmii_delayline);
-+
-+void dwmac_rk_get_rgmii_delayline(struct stmmac_priv *priv,
-+				  int *tx_delay, int *rx_delay)
-+{
-+	struct rk_priv_data *bsp_priv = priv->plat->bsp_priv;
-+
-+	if (!bsp_priv->ops->set_to_rgmii)
-+		return;
-+
-+	*tx_delay = bsp_priv->tx_delay;
-+	*rx_delay = bsp_priv->rx_delay;
-+}
-+EXPORT_SYMBOL(dwmac_rk_get_rgmii_delayline);
-+
-+int dwmac_rk_get_phy_interface(struct stmmac_priv *priv)
-+{
-+	struct rk_priv_data *bsp_priv = priv->plat->bsp_priv;
-+
-+	return bsp_priv->phy_iface;
-+}
-+EXPORT_SYMBOL(dwmac_rk_get_phy_interface);
-+
- static int rk_gmac_probe(struct platform_device *pdev)
- {
- 	struct plat_stmmacenet_data *plat_dat;
 @@ -2028,6 +2067,7 @@ static int rk_gmac_probe(struct platform
  	 */
  	if (!plat_dat->has_gmac4)
