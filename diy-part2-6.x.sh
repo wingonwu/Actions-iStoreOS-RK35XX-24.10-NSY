@@ -108,10 +108,6 @@ echo 下载 304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch
 curl -o target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch
 
-echo 下载 700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch 
-curl -o target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch \
-  https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch
-  
 echo 下载 701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch
 curl -o target/linux/rockchip/patches-6.6/701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch

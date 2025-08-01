@@ -1631,13 +1631,6 @@
 +
 +#endif /* __DWMAC_RK_TOOL_H__ */
 +
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -22,3 +22,3 @@
- obj-$(CONFIG_DWMAC_QCOM_ETHQOS)	+= dwmac-qcom-ethqos.o
--obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rk.o
-+obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rk.o dwmac-rk-tool.o
- obj-$(CONFIG_DWMAC_SOCFPGA)	+= dwmac-altr-socfpga.o
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 @@ -25,6 +25,7 @@
@@ -1710,23 +1703,3 @@
  	plat_dat->fix_mac_speed = rk_fix_speed;
  
  	plat_dat->bsp_priv = rk_gmac_setup(pdev, plat_dat, data);
-@@ -2047,6 +2087,10 @@ static int rk_gmac_probe(struct platform
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (ret)
- 		goto err_gmac_powerdown;
-+ 
-+	ret = dwmac_rk_create_loopback_sysfs(&pdev->dev);
-+	if (ret)
-+		goto err_gmac_powerdown;
- 
- 	return 0;
- 
-@@ -2065,6 +2300,8 @@ static void rk_gmac_remove(struct platfo
- 	stmmac_dvr_remove(&pdev->dev);
- 
- 	rk_gmac_powerdown(bsp_priv);
-+
-+	dwmac_rk_remove_loopback_sysfs(&pdev->dev);
- }
- 
- #ifdef CONFIG_PM_SLEEP
