@@ -1,13 +1,5 @@
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -25,6 +25,7 @@
- #include <linux/pm_runtime.h>
- 
- #include "stmmac_platform.h"
-+#include "dwmac-rk-tool.h"
- 
- struct rk_priv_data;
- struct rk_gmac_ops {
 @@ -1704,8 +1705,11 @@ static int rk_gmac_clk_init(struct plat_
  		bsp_priv->clks[i].id = rk_clocks[i];
  
