@@ -34,7 +34,7 @@ echo -e "\\ndefine Device/nsy_g68-plus
   DEVICE_VENDOR := NSY
   DEVICE_MODEL := G68
   DEVICE_DTS := rk3568/rk3568-nsy-g68-plus
-  DEVICE_PACKAGES += kmod-nvme kmod-ata-ahci-dwc kmod-thermal kmod-switch-rtl8306 kmod-switch-rtl8366-smi kmod-switch-rtl8366rb kmod-switch-rtl8366s kmod-hwmon-pwmfan kmod-r8169 kmod-switch-rtl8367b swconfig kmod-swconfig kmod-mt7916-firmware
+  DEVICE_PACKAGES += kmod-nvme kmod-ata-ahci-dwc kmod-thermal kmod-switch-rtl8306 kmod-switch-rtl8366-smi kmod-switch-rtl8366rb kmod-switch-rtl8366s kmod-hwmon-pwmfan kmod-r8169 swconfig kmod-swconfig kmod-mt7916-firmware
 endef
 TARGET_DEVICES += nsy_g68-plus" >> target/linux/rockchip/image/legacy.mk
 
@@ -79,7 +79,16 @@ cp -f $GITHUB_WORKSPACE/configfiles/WirelessDriver/mt7916_eeprom.bin package/bas
 wget https://github.com/xiaomeng9597/files/releases/download/files/rtl8367b-fix-gmac.tar.gz
 tar -xvf rtl8367b-fix-gmac.tar.gz
 
-cp -f $GITHUB_WORKSPACE/configfiles/rtl8367b.c target/linux/generic/files/drivers/net/phy/rtl8367b.c
+# cp -f $GITHUB_WORKSPACE/configfiles/rtl8367b.c target/linux/generic/files/drivers/net/phy/rtl8367b.c
+
+# 替换新的交换机驱动
+cp -r target/linux/mediatek/files/drivers/net/phy/rtk target/linux/rockchip/files/drivers/phy/
+# config-6.6 添加驱动配置信息
+# 在文件末尾添加配置项
+echo "CONFIG_RTL8367S_GSW=y" >> target/linux/rockchip/armv8/config-6.6
+
+#修改dts
+sed -i 's/compatible\s*=\s*"realtek,rtl8367s"\s*;/compatible = "realtek,rtl8367s_gsw";/g' configfiles/dts/rk3568-nsy-g68-plus.dts
 
 # 复制dts设备树文件到指定目录下
 cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3588-orangepi-5-plus.dts target/linux/rockchip/dts/rk3588/rk3588-orangepi-5-plus.dts
