@@ -83,6 +83,8 @@ tar -xvf rtl8367b-fix-gmac.tar.gz
 
 # 替换新的交换机驱动
 cp -r target/linux/mediatek/files/drivers/net/phy/rtk target/linux/rockchip/files/drivers/phy/
+#启用选项
+cp -f $GITHUB_WORKSPACE/patches-6.6/500-gsw-rtl8367s-mt7622-support.patch target/linux/rockchip/patches-6.6/500-gsw-rtl8367s-mt7622-support.patch
 # config-6.6 添加驱动配置信息
 # 在文件末尾添加配置项
 echo "CONFIG_RTL8367S_GSW=y" >> target/linux/rockchip/armv8/config-6.6
