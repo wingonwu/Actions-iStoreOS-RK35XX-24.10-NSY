@@ -79,6 +79,7 @@ cp -f $GITHUB_WORKSPACE/configfiles/WirelessDriver/mt7916_eeprom.bin package/bas
 wget https://github.com/xiaomeng9597/files/releases/download/files/rtl8367b-fix-gmac.tar.gz
 tar -xvf rtl8367b-fix-gmac.tar.gz
 
+cp -f $GITHUB_WORKSPACE/configfiles/rtl8367b.c target/linux/generic/files/drivers/net/phy/rtl8367b.c
 
 # 复制dts设备树文件到指定目录下
 cp -f $GITHUB_WORKSPACE/configfiles/dts/rk3588-orangepi-5-plus.dts target/linux/rockchip/dts/rk3588/rk3588-orangepi-5-plus.dts
