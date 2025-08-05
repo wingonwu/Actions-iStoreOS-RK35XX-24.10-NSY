@@ -1,0 +1,117 @@
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+index f0305f2..3ba681a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Makefile
++++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+@@ -20,9 +20,7 @@ obj-$(CONFIG_DWMAC_LPC18XX)	+= dwmac-lpc18xx.o
+ obj-$(CONFIG_DWMAC_MEDIATEK)	+= dwmac-mediatek.o
+ obj-$(CONFIG_DWMAC_MESON)	+= dwmac-meson.o dwmac-meson8b.o
+ obj-$(CONFIG_DWMAC_QCOM_ETHQOS)	+= dwmac-qcom-ethqos.o
+-obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rockchip.o
+-dwmac-rockchip-objs := dwmac-rk.o
+-dwmac-rockchip-$(CONFIG_DWMAC_ROCKCHIP_TOOL) += dwmac-rk-tool.o
++obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rk.o dwmac-rk-tool.o
+ obj-$(CONFIG_DWMAC_SOCFPGA)	+= dwmac-altr-socfpga.o
+ obj-$(CONFIG_DWMAC_STARFIVE)	+= dwmac-starfive.o
+ obj-$(CONFIG_DWMAC_STI)		+= dwmac-sti.o
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.c
+index 822900d..4b9c027 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk-tool.c
+@@ -173,7 +173,7 @@ static int dwmac_rk_enable_mac_loopback(struct stmmac_priv *priv, int speed,
+ 	}
+ 
+ 	if (likely(priv->plat->fix_mac_speed))
+-		priv->plat->fix_mac_speed(priv->plat->bsp_priv, speed, dwmac_rk_get_phy_interface(priv));
++		priv->plat->fix_mac_speed(priv->plat->bsp_priv, speed, priv->mode);
+ 
+ 	return 0;
+ }
+@@ -257,7 +257,7 @@ static int dwmac_rk_enable_phy_loopback(struct stmmac_priv *priv, int speed,
+ 	}
+ 
+ 	if (likely(priv->plat->fix_mac_speed))
+-		priv->plat->fix_mac_speed(priv->plat->bsp_priv, speed, dwmac_rk_get_phy_interface(priv));
++		priv->plat->fix_mac_speed(priv->plat->bsp_priv, speed, priv->mode);
+ 
+ 	return 0;
+ }
+@@ -627,7 +627,7 @@ static int dwmac_rk_get_desc_status(struct stmmac_priv *priv,
+ 	int tx_status, rx_status;
+ 
+ 	txp = lb_priv->dma_tx;
+-	tx_status = stmmac_tx_status(priv,
++	tx_status = priv->hw->desc->tx_status(
+ 					      &priv->xstats, txp,
+ 					      priv->ioaddr);
+ 	/* Check if the descriptor is owned by the DMA */
+@@ -636,7 +636,7 @@ static int dwmac_rk_get_desc_status(struct stmmac_priv *priv,
+ 
+ 	rxp = lb_priv->dma_rx;
+ 	/* read the status of the incoming frame */
+-	rx_status = stmmac_rx_status(priv,
++	rx_status = priv->hw->desc->rx_status(
+ 					      &priv->xstats, rxp);
+ 	if (unlikely(rx_status & dma_own))
+ 		return -EBUSY;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index a81a1bb..3d24c8a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -26,10 +26,7 @@
+ #include <linux/pm_runtime.h>
+ 
+ #include "stmmac_platform.h"
+-
+-#ifdef CONFIG_DWMAC_ROCKCHIP_TOOL
+ #include "dwmac-rk-tool.h"
+-#endif
+ 
+ struct rk_priv_data;
+ struct rk_gmac_ops {
+@@ -2156,7 +2153,6 @@ static void rk_fix_speed(void *priv, unsigned int speed, unsigned int mode)
+ 	}
+ }
+ 
+-#ifdef CONFIG_DWMAC_ROCKCHIP_TOOL
+ void dwmac_rk_set_rgmii_delayline(struct stmmac_priv *priv,
+ 				  int tx_delay, int rx_delay)
+ {
+@@ -2168,6 +2164,7 @@ void dwmac_rk_set_rgmii_delayline(struct stmmac_priv *priv,
+ 		bsp_priv->rx_delay = rx_delay;
+ 	}
+ }
++EXPORT_SYMBOL(dwmac_rk_set_rgmii_delayline);
+ 
+ void dwmac_rk_get_rgmii_delayline(struct stmmac_priv *priv,
+ 				  int *tx_delay, int *rx_delay)
+@@ -2180,6 +2177,7 @@ void dwmac_rk_get_rgmii_delayline(struct stmmac_priv *priv,
+ 	*tx_delay = bsp_priv->tx_delay;
+ 	*rx_delay = bsp_priv->rx_delay;
+ }
++EXPORT_SYMBOL(dwmac_rk_get_rgmii_delayline);
+ 
+ int dwmac_rk_get_phy_interface(struct stmmac_priv *priv)
+ {
+@@ -2187,7 +2185,7 @@ int dwmac_rk_get_phy_interface(struct stmmac_priv *priv)
+ 
+ 	return bsp_priv->phy_iface;
+ }
+-#endif
++EXPORT_SYMBOL(dwmac_rk_get_phy_interface);
+ 
+ static int rk_gmac_probe(struct platform_device *pdev)
+ {
+@@ -2235,12 +2233,10 @@ static int rk_gmac_probe(struct platform_device *pdev)
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret)
+ 		goto err_gmac_powerdown;
+-
+-#ifdef CONFIG_DWMAC_ROCKCHIP_TOOL
++ 
+ 	ret = dwmac_rk_create_loopback_sysfs(&pdev->dev);
+ 	if (ret)
+ 		goto err_gmac_powerdown;
+-#endif
+ 
+ 	return 0;
+ 

@@ -149,7 +149,7 @@ curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
   
 echo 下载 9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
 cp -f $GITHUB_WORKSPACE/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
-
+cp -f $GITHUB_WORKSPACE/patches-6.6/9999-modify-some-configuration-information-rkgmac-to-keep-consistent-with-imm.patch target/linux/rockchip/patches-6.6/9999-modify-some-configuration-information-rkgmac-to-keep-consistent-with-imm.patch
 echo 下载 9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
 curl -o target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
