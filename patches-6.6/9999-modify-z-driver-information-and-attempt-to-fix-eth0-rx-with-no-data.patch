@@ -1,0 +1,728 @@
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 3d24c8a..5a09f6f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -1158,137 +1158,6 @@ static const struct rk_gmac_ops rk3399_ops = {
+ 	.set_rmii_speed = rk3399_set_rmii_speed,
+ };
+ 
+-#define RK3528_VO_GRF_GMAC_CON		0x0018
+-#define RK3528_VO_GRF_MACPHY_CON0	0x001c
+-#define RK3528_VO_GRF_MACPHY_CON1	0x0020
+-#define RK3528_VPU_GRF_GMAC_CON5	0x0018
+-#define RK3528_VPU_GRF_GMAC_CON6	0x001c
+-
+-#define RK3528_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(15)
+-#define RK3528_GMAC_RXCLK_DLY_DISABLE	GRF_CLR_BIT(15)
+-#define RK3528_GMAC_TXCLK_DLY_ENABLE	GRF_BIT(14)
+-#define RK3528_GMAC_TXCLK_DLY_DISABLE	GRF_CLR_BIT(14)
+-
+-#define RK3528_GMAC_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0xFF, 8)
+-#define RK3528_GMAC_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0xFF, 0)
+-
+-#define RK3528_GMAC0_PHY_INTF_SEL_RMII	GRF_BIT(1)
+-#define RK3528_GMAC1_PHY_INTF_SEL_RGMII	GRF_CLR_BIT(8)
+-#define RK3528_GMAC1_PHY_INTF_SEL_RMII	GRF_BIT(8)
+-
+-#define RK3528_GMAC1_CLK_SELECT_CRU	GRF_CLR_BIT(12)
+-#define RK3528_GMAC1_CLK_SELECT_IO	GRF_BIT(12)
+-
+-#define RK3528_GMAC0_CLK_RMII_DIV2	GRF_BIT(3)
+-#define RK3528_GMAC0_CLK_RMII_DIV20	GRF_CLR_BIT(3)
+-#define RK3528_GMAC1_CLK_RMII_DIV2	GRF_BIT(10)
+-#define RK3528_GMAC1_CLK_RMII_DIV20	GRF_CLR_BIT(10)
+-
+-#define RK3528_GMAC1_CLK_RGMII_DIV1	(GRF_CLR_BIT(11) | GRF_CLR_BIT(10))
+-#define RK3528_GMAC1_CLK_RGMII_DIV5	(GRF_BIT(11) | GRF_BIT(10))
+-#define RK3528_GMAC1_CLK_RGMII_DIV50	(GRF_BIT(11) | GRF_CLR_BIT(10))
+-
+-#define RK3528_GMAC0_CLK_RMII_GATE	GRF_BIT(2)
+-#define RK3528_GMAC0_CLK_RMII_NOGATE	GRF_CLR_BIT(2)
+-#define RK3528_GMAC1_CLK_RMII_GATE	GRF_BIT(9)
+-#define RK3528_GMAC1_CLK_RMII_NOGATE	GRF_CLR_BIT(9)
+-
+-static void rk3528_set_to_rgmii(struct rk_priv_data *bsp_priv,
+-				int tx_delay, int rx_delay)
+-{
+-	regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-		     RK3528_GMAC1_PHY_INTF_SEL_RGMII);
+-
+-	regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-		     DELAY_ENABLE(RK3528, tx_delay, rx_delay));
+-
+-	regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON6,
+-		     RK3528_GMAC_CLK_RX_DL_CFG(rx_delay) |
+-		     RK3528_GMAC_CLK_TX_DL_CFG(tx_delay));
+-}
+-
+-static void rk3528_set_to_rmii(struct rk_priv_data *bsp_priv)
+-{
+-	if (bsp_priv->id == 1)
+-		regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-			     RK3528_GMAC1_PHY_INTF_SEL_RMII);
+-	else
+-		regmap_write(bsp_priv->grf, RK3528_VO_GRF_GMAC_CON,
+-			     RK3528_GMAC0_PHY_INTF_SEL_RMII |
+-			     RK3528_GMAC0_CLK_RMII_DIV2);
+-}
+-
+-static void rk3528_set_rgmii_speed(struct rk_priv_data *bsp_priv, int speed)
+-{
+-	struct device *dev = &bsp_priv->pdev->dev;
+-
+-	if (speed == 10)
+-		regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-			     RK3528_GMAC1_CLK_RGMII_DIV50);
+-	else if (speed == 100)
+-		regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-			     RK3528_GMAC1_CLK_RGMII_DIV5);
+-	else if (speed == 1000)
+-		regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5,
+-			     RK3528_GMAC1_CLK_RGMII_DIV1);
+-	else
+-		dev_err(dev, "unknown speed value for RGMII! speed=%d", speed);
+-}
+-
+-static void rk3528_set_rmii_speed(struct rk_priv_data *bsp_priv, int speed)
+-{
+-	struct device *dev = &bsp_priv->pdev->dev;
+-	unsigned int reg, val;
+-
+-	if (speed == 10)
+-		val = bsp_priv->id == 1 ? RK3528_GMAC1_CLK_RMII_DIV20 :
+-					  RK3528_GMAC0_CLK_RMII_DIV20;
+-	else if (speed == 100)
+-		val = bsp_priv->id == 1 ? RK3528_GMAC1_CLK_RMII_DIV2 :
+-					  RK3528_GMAC0_CLK_RMII_DIV2;
+-	else {
+-		dev_err(dev, "unknown speed value for RMII! speed=%d", speed);
+-		return;
+-	}
+-
+-	reg = bsp_priv->id == 1 ? RK3528_VPU_GRF_GMAC_CON5 :
+-				  RK3528_VO_GRF_GMAC_CON;
+-
+-	regmap_write(bsp_priv->grf, reg, val);
+-}
+-
+-static void rk3528_set_clock_selection(struct rk_priv_data *bsp_priv,
+-				       bool input, bool enable)
+-{
+-	unsigned int val;
+-
+-	if (bsp_priv->id == 1) {
+-		val = input ? RK3528_GMAC1_CLK_SELECT_IO :
+-			      RK3528_GMAC1_CLK_SELECT_CRU;
+-		val |= enable ? RK3528_GMAC1_CLK_RMII_NOGATE :
+-				RK3528_GMAC1_CLK_RMII_GATE;
+-		regmap_write(bsp_priv->grf, RK3528_VPU_GRF_GMAC_CON5, val);
+-	} else {
+-		val = enable ? RK3528_GMAC0_CLK_RMII_NOGATE :
+-			       RK3528_GMAC0_CLK_RMII_GATE;
+-		regmap_write(bsp_priv->grf, RK3528_VO_GRF_GMAC_CON, val);
+-	}
+-}
+-
+-static const struct rk_gmac_ops rk3528_ops = {
+-	.set_to_rgmii = rk3528_set_to_rgmii,
+-	.set_to_rmii = rk3528_set_to_rmii,
+-	.set_rgmii_speed = rk3528_set_rgmii_speed,
+-	.set_rmii_speed = rk3528_set_rmii_speed,
+-	.set_clock_selection = rk3528_set_clock_selection,
+-	.regs_valid = true,
+-	.regs = {
+-		0xffbd0000, /* gmac0 */
+-		0xffbe0000, /* gmac1 */
+-		0x0, /* sentinel */
+-	},
+-};
+-
+ #define RK3568_GRF_GMAC0_CON0		0x0380
+ #define RK3568_GRF_GMAC0_CON1		0x0384
+ #define RK3568_GRF_GMAC1_CON0		0x0388
+@@ -2255,11 +2124,8 @@ static void rk_gmac_remove(struct platform_device *pdev)
+ 	stmmac_dvr_remove(&pdev->dev);
+ 
+ 	rk_gmac_powerdown(bsp_priv);
+-#ifdef CONFIG_DWMAC_ROCKCHIP_TOOL
++
+ 	dwmac_rk_remove_loopback_sysfs(&pdev->dev);
+-#endif
+-	if (bsp_priv->phy_reset)
+-		reset_control_put(bsp_priv->phy_reset);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -2303,7 +2169,6 @@ static const struct of_device_id rk_gmac_dwmac_match[] = {
+ 	{ .compatible = "rockchip,rk3366-gmac", .data = &rk3366_ops },
+ 	{ .compatible = "rockchip,rk3368-gmac", .data = &rk3368_ops },
+ 	{ .compatible = "rockchip,rk3399-gmac", .data = &rk3399_ops },
+-	{ .compatible = "rockchip,rk3528-gmac", .data = &rk3528_ops },
+ 	{ .compatible = "rockchip,rk3568-gmac", .data = &rk3568_ops },
+ 	{ .compatible = "rockchip,rk3588-gmac", .data = &rk3588_ops },
+ 	{ .compatible = "rockchip,rv1108-gmac", .data = &rv1108_ops },
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index dd2ab61..05ea74e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -364,19 +364,17 @@ static int dwxgmac2_dma_interrupt(struct stmmac_priv *priv,
+ 	}
+ 
+ 	/* TX/RX NORMAL interrupts */
+-	if (likely(intr_status & XGMAC_NIS)) {
+-		if (likely(intr_status & XGMAC_RI)) {
+-			u64_stats_update_begin(&stats->syncp);
+-			u64_stats_inc(&stats->rx_normal_irq_n[chan]);
+-			u64_stats_update_end(&stats->syncp);
+-			ret |= handle_rx;
+-		}
+-		if (likely(intr_status & (XGMAC_TI | XGMAC_TBU))) {
+-			u64_stats_update_begin(&stats->syncp);
+-			u64_stats_inc(&stats->tx_normal_irq_n[chan]);
+-			u64_stats_update_end(&stats->syncp);
+-			ret |= handle_tx;
+-		}
++	if (likely(intr_status & XGMAC_RI)) {
++		u64_stats_update_begin(&stats->syncp);
++		u64_stats_inc(&stats->rx_normal_irq_n[chan]);
++		u64_stats_update_end(&stats->syncp);
++		ret |= handle_rx;
++	}
++	if (likely(intr_status & (XGMAC_TI | XGMAC_TBU))) {
++		u64_stats_update_begin(&stats->syncp);
++		u64_stats_inc(&stats->tx_normal_irq_n[chan]);
++		u64_stats_update_end(&stats->syncp);
++		ret |= handle_tx;
+ 	}
+ 
+ 	/* Clear interrupts */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4207a65..950cedf 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -842,6 +842,11 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
+ 	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
+ 		return -EOPNOTSUPP;
+ 
++	if (!priv->plat->clk_ptp_rate) {
++		netdev_err(priv->dev, "Invalid PTP clock rate");
++		return -EINVAL;
++	}
++
+ 	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
+ 	priv->systime_flags = systime_flags;
+ 
+@@ -7398,6 +7403,7 @@ int stmmac_dvr_probe(struct device *device,
+ {
+ 	struct net_device *ndev = NULL;
+ 	struct stmmac_priv *priv;
++	const char *devname = of_get_property(device->of_node, "label", NULL);
+ 	u32 rxq;
+ 	int i, ret = 0;
+ 
+@@ -7406,6 +7412,9 @@ int stmmac_dvr_probe(struct device *device,
+ 	if (!ndev)
+ 		return -ENOMEM;
+ 
++	if (devname)
++		strscpy(ndev->name, devname, IFNAMSIZ);
++
+ 	SET_NETDEV_DEV(ndev, device);
+ 
+ 	priv = netdev_priv(ndev);
+@@ -7572,7 +7581,7 @@ int stmmac_dvr_probe(struct device *device,
+ #ifdef STMMAC_VLAN_TAG_USED
+ 	/* Both mac100 and gmac support receive VLAN tag detection */
+ 	ndev->features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX;
+-	if (priv->dma_cap.vlhash) {
++	if (priv->plat->vlhash_en && priv->dma_cap.vlhash) {
+ 		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+ 		ndev->features |= NETIF_F_HW_VLAN_STAG_FILTER;
+ 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index 0bc77b1..0542cfd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -481,10 +481,6 @@ int stmmac_mdio_reset(struct mii_bus *bus)
+ 		gpiod_set_value_cansleep(reset_gpio, 0);
+ 		if (delays[2])
+ 			msleep(DIV_ROUND_UP(delays[2], 1000));
+-
+-		/* put reset gpio resource for next time */
+-		if (reset_gpio)
+-			devm_gpiod_put(priv->device, reset_gpio);
+ 	}
+ #endif
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 4d570ef..a6ae580 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -419,6 +419,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct plat_stmmacenet_data *plat;
+ 	struct stmmac_dma_cfg *dma_cfg;
++	static int bus_id = -ENODEV;
+ 	int phy_mode;
+ 	void *ret;
+ 	int rc;
+@@ -454,8 +455,14 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+ 	of_property_read_u32(np, "max-speed", &plat->max_speed);
+ 
+ 	plat->bus_id = of_alias_get_id(np, "ethernet");
+-	if (plat->bus_id < 0)
+-		plat->bus_id = 0;
++	if (plat->bus_id < 0) {
++		if (bus_id < 0)
++			bus_id = of_alias_get_highest_id("ethernet");
++		/* No ethernet alias found, init at -1 so first bus_id is 0 */
++		if (bus_id < 0)
++			bus_id = -1;
++		plat->bus_id = ++bus_id;
++	}
+ 
+ 	/* Default to phy auto-detection */
+ 	plat->phy_addr = -1;
+@@ -589,6 +596,9 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+ 			 "force_sf_dma_mode is ignored if force_thresh_dma_mode is set.\n");
+ 	}
+ 
++	/* To disable VLAN tag filter */
++	plat->vlhash_en = !of_property_read_bool(np, "snps,no-vlhash");
++
+ 	of_property_read_u32(np, "snps,ps-speed", &plat->mac_port_sel_speed);
+ 
+ 	plat->axi = stmmac_axi_setup(pdev);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index a04bb2e..80ecbd7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -295,7 +295,7 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
+ 
+ 	/* Calculate the clock domain crossing (CDC) error if necessary */
+ 	priv->plat->cdc_error_adj = 0;
+-	if (priv->plat->has_gmac4 && priv->plat->clk_ptp_rate)
++	if (priv->plat->has_gmac4)
+ 		priv->plat->cdc_error_adj = (2 * NSEC_PER_SEC) / priv->plat->clk_ptp_rate;
+ 
+ 	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index a2ea796..6c5830a 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -878,6 +878,9 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
++	if (addr >= PHY_MAX_ADDR)
++		return -ENXIO;
++
+ 	if (bus->read)
+ 		retval = bus->read(bus, addr, regnum);
+ 	else
+@@ -907,6 +910,9 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
++	if (addr >= PHY_MAX_ADDR)
++		return -ENXIO;
++
+ 	if (bus->write)
+ 		err = bus->write(bus, addr, regnum, val);
+ 	else
+@@ -968,6 +974,9 @@ int __mdiobus_c45_read(struct mii_bus *bus, int addr, int devad, u32 regnum)
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
++	if (addr >= PHY_MAX_ADDR)
++		return -ENXIO;
++
+ 	if (bus->read_c45)
+ 		retval = bus->read_c45(bus, addr, devad, regnum);
+ 	else
+@@ -999,6 +1008,9 @@ int __mdiobus_c45_write(struct mii_bus *bus, int addr, int devad, u32 regnum,
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
++	if (addr >= PHY_MAX_ADDR)
++		return -ENXIO;
++
+ 	if (bus->write_c45)
+ 		err = bus->write_c45(bus, addr, devad, regnum, val);
+ 	else
+diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/microchip.c
+index 623607f..cb8306c 100644
+--- a/drivers/net/phy/microchip.c
++++ b/drivers/net/phy/microchip.c
+@@ -310,7 +310,7 @@ static void lan88xx_link_change_notify(struct phy_device *phydev)
+ 	 * As workaround, set to 10 before setting to 100
+ 	 * at forced 100 F/H mode.
+ 	 */
+-	if (!phydev->autoneg && phydev->speed == 100) {
++	if (phydev->state == PHY_NOLINK && !phydev->autoneg && phydev->speed == 100) {
+ 		/* disable phy interrupt */
+ 		temp = phy_read(phydev, LAN88XX_INT_MASK);
+ 		temp &= ~LAN88XX_INT_MASK_MDINTPIN_EN_;
+diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+index 727ab18..75c1d3f 100644
+--- a/drivers/net/phy/motorcomm.c
++++ b/drivers/net/phy/motorcomm.c
+@@ -228,6 +228,12 @@
+ #define YTPHY_WCR_INTR_SEL			BIT(6)
+ #define YTPHY_WCR_ENABLE			BIT(3)
+ 
++#define YTPHY_LED_NUM_CONFIG			5
++/* LED_GENERAL_CFG: 0xA00B, LED0_CFG: 0xA00C, LED1_CFG: 0xA00D
++ * LED2_CFG: 0xA00E, LED_BLINK_CFG: 0xA00F
++ */
++#define YTPHY_LED_CONFIG_REG(x)			(0xA00B + x)
++
+ /* 2b00 84ms
+  * 2b01 168ms  *default*
+  * 2b10 336ms
+@@ -1564,6 +1570,27 @@ static int yt8521_resume(struct phy_device *phydev)
+ 	return yt8521_modify_utp_fiber_bmcr(phydev, BMCR_PDOWN, 0);
+ }
+ 
++static int ytphy_config_led(struct phy_device *phydev)
++{
++	struct device_node *node = phydev->mdio.dev.of_node;
++	u32 led_data[YTPHY_LED_NUM_CONFIG];
++	int ret;
++
++	ret = of_property_read_u32_array(node, "motorcomm,led-data",
++				         led_data, YTPHY_LED_NUM_CONFIG);
++	if (ret)
++		return 0;
++
++	for (int i = 0; i < YTPHY_LED_NUM_CONFIG; i++) {
++		ret = ytphy_write_ext(phydev, YTPHY_LED_CONFIG_REG(i),
++				      led_data[i]);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
+ /**
+  * yt8521_config_init() - called to initialize the PHY
+  * @phydev: a pointer to a &struct phy_device
+@@ -1602,6 +1629,10 @@ static int yt8521_config_init(struct phy_device *phydev)
+ 		if (ret < 0)
+ 			goto err_restore_page;
+ 	}
++
++	ret = ytphy_config_led(phydev);
++	if (ret < 0)
++		goto err_restore_page;
+ err_restore_page:
+ 	return phy_restore_page(phydev, old_page, ret);
+ }
+@@ -1637,7 +1668,7 @@ static int yt8531_config_init(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return 0;
++	return ytphy_config_led(phydev);
+ }
+ 
+ /**
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 55ba8a5..4d6498e 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1907,8 +1907,10 @@ void phy_detach(struct phy_device *phydev)
+ 	struct module *ndev_owner = NULL;
+ 	struct mii_bus *bus;
+ 
+-	if (phydev->devlink)
++	if (phydev->devlink) {
+ 		device_link_del(phydev->devlink);
++		phydev->devlink = NULL;
++	}
+ 
+ 	if (phydev->drv && phydev->drv->detach)
+ 		phydev->drv->detach(phydev);
+diff --git a/drivers/net/phy/rtl8366_smi.c b/drivers/net/phy/rtl8366_smi.c
+index 9fbb928..1d4143f 100644
+--- a/drivers/net/phy/rtl8366_smi.c
++++ b/drivers/net/phy/rtl8366_smi.c
+@@ -1023,8 +1023,13 @@ static void rtl8366_debugfs_init(struct rtl8366_smi *smi)
+ 	}
+ 	root = smi->debugfs_root;
+ 
+-	debugfs_create_x16("reg", S_IRUGO | S_IWUSR, root,
++	node = debugfs_create_x16("reg", S_IRUGO | S_IWUSR, root,
+ 				  &smi->dbg_reg);
++	if (!node) {
++		dev_err(smi->parent, "Creating debugfs file '%s' failed\n",
++			"reg");
++		return;
++	}
+ 
+ 	node = debugfs_create_file("val", S_IRUGO | S_IWUSR, root, smi,
+ 				   &fops_rtl8366_regs);
+@@ -1042,8 +1047,13 @@ static void rtl8366_debugfs_init(struct rtl8366_smi *smi)
+ 		return;
+ 	}
+ 
+-	debugfs_create_u8("vlan_4k_page", S_IRUGO | S_IWUSR, root,
++	node = debugfs_create_u8("vlan_4k_page", S_IRUGO | S_IWUSR, root,
+ 				  &smi->dbg_vlan_4k_page);
++	if (!node) {
++		dev_err(smi->parent, "Creating debugfs file '%s' failed\n",
++			"vlan_4k_page");
++		return;
++	}
+ 
+ 	node = debugfs_create_file("vlan_4k", S_IRUSR, root, smi,
+ 				   &fops_rtl8366_vlan_4k);
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index c88edb1..4ca813c 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -155,10 +155,29 @@ static int smsc_phy_reset(struct phy_device *phydev)
+ 
+ static int lan87xx_config_aneg(struct phy_device *phydev)
+ {
+-	int rc;
++	u8 mdix_ctrl;
+ 	int val;
++	int rc;
++
++	/* When auto-negotiation is disabled (forced mode), the PHY's
++	 * Auto-MDIX will continue toggling the TX/RX pairs.
++	 *
++	 * To establish a stable link, we must select a fixed MDI mode.
++	 * If the user has not specified a fixed MDI mode (i.e., mdix_ctrl is
++	 * 'auto'), we default to ETH_TP_MDI. This choice of a ETH_TP_MDI mode
++	 * mirrors the behavior the hardware would exhibit if the AUTOMDIX_EN
++	 * strap were configured for a fixed MDI connection.
++	 */
++	if (phydev->autoneg == AUTONEG_DISABLE) {
++		if (phydev->mdix_ctrl == ETH_TP_MDI_AUTO)
++			mdix_ctrl = ETH_TP_MDI;
++		else
++			mdix_ctrl = phydev->mdix_ctrl;
++	} else {
++		mdix_ctrl = phydev->mdix_ctrl;
++	}
+ 
+-	switch (phydev->mdix_ctrl) {
++	switch (mdix_ctrl) {
+ 	case ETH_TP_MDI:
+ 		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_;
+ 		break;
+@@ -167,7 +186,8 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
+ 			SPECIAL_CTRL_STS_AMDIX_STATE_;
+ 		break;
+ 	case ETH_TP_MDI_AUTO:
+-		val = SPECIAL_CTRL_STS_AMDIX_ENABLE_;
++		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
++			SPECIAL_CTRL_STS_AMDIX_ENABLE_;
+ 		break;
+ 	default:
+ 		return genphy_config_aneg(phydev);
+@@ -183,7 +203,7 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
+ 	rc |= val;
+ 	phy_write(phydev, SPECIAL_CTRL_STS, rc);
+ 
+-	phydev->mdix = phydev->mdix_ctrl;
++	phydev->mdix = mdix_ctrl;
+ 	return genphy_config_aneg(phydev);
+ }
+ 
+@@ -261,6 +281,33 @@ int lan87xx_read_status(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL_GPL(lan87xx_read_status);
+ 
++static int lan87xx_phy_config_init(struct phy_device *phydev)
++{
++	int rc;
++
++	/* The LAN87xx PHY's initial MDI-X mode is determined by the AUTOMDIX_EN
++	 * hardware strap, but the driver cannot read the strap's status. This
++	 * creates an unpredictable initial state.
++	 *
++	 * To ensure consistent and reliable behavior across all boards,
++	 * override the strap configuration on initialization and force the PHY
++	 * into a known state with Auto-MDIX enabled, which is the expected
++	 * default for modern hardware.
++	 */
++	rc = phy_modify(phydev, SPECIAL_CTRL_STS,
++			SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
++			SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
++			SPECIAL_CTRL_STS_AMDIX_STATE_,
++			SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
++			SPECIAL_CTRL_STS_AMDIX_ENABLE_);
++	if (rc < 0)
++		return rc;
++
++	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++
++	return smsc_phy_config_init(phydev);
++}
++
+ static int lan874x_phy_config_init(struct phy_device *phydev)
+ {
+ 	u16 val;
+@@ -696,7 +743,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 
+ 	/* basic functions */
+ 	.read_status	= lan87xx_read_status,
+-	.config_init	= smsc_phy_config_init,
++	.config_init	= lan87xx_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
+ 	.config_aneg	= lan87xx_config_aneg,
+ 
+diff --git a/include/linux/cpu.h b/include/linux/cpu.h
+index facbf04..ecf8ed1 100644
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -79,6 +79,7 @@ extern ssize_t cpu_show_reg_file_data_sampling(struct device *dev,
+ 					       struct device_attribute *attr, char *buf);
+ extern ssize_t cpu_show_indirect_target_selection(struct device *dev,
+ 						  struct device_attribute *attr, char *buf);
++extern ssize_t cpu_show_tsa(struct device *dev, struct device_attribute *attr, char *buf);
+ 
+ extern __printf(4, 5)
+ struct device *cpu_device_create(struct device *parent, void *drvdata,
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 8fa23bd..0bca1a9 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -44,10 +44,7 @@ struct mdio_device {
+ 	unsigned int reset_deassert_delay;
+ };
+ 
+-static inline struct mdio_device *to_mdio_device(const struct device *dev)
+-{
+-	return container_of(dev, struct mdio_device, dev);
+-}
++#define to_mdio_device(__dev)	container_of_const(__dev, struct mdio_device, dev)
+ 
+ /* struct mdio_driver_common: Common to all MDIO drivers */
+ struct mdio_driver_common {
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 209370f..ee26e37 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2551,6 +2551,11 @@ static inline unsigned long get_mm_counter(struct mm_struct *mm, int member)
+ 	return percpu_counter_read_positive(&mm->rss_stat[member]);
+ }
+ 
++static inline unsigned long get_mm_counter_sum(struct mm_struct *mm, int member)
++{
++	return percpu_counter_sum_positive(&mm->rss_stat[member]);
++}
++
+ void mm_trace_rss_stat(struct mm_struct *mm, int member);
+ 
+ static inline void add_mm_counter(struct mm_struct *mm, int member, long value)
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index e87ab50..f86ccff 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -773,10 +773,7 @@ struct phy_device {
+ /* Generic phy_device::dev_flags */
+ #define PHY_F_NO_IRQ		0x80000000
+ 
+-static inline struct phy_device *to_phy_device(const struct device *dev)
+-{
+-	return container_of(to_mdio_device(dev), struct phy_device, mdio);
+-}
++#define to_phy_device(__dev)	container_of_const(to_mdio_device(__dev), struct phy_device, mdio)
+ 
+ /**
+  * struct phy_tdr_config - Configuration of a TDR raw test
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 83c8401..393c300 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -943,6 +943,10 @@ struct task_struct {
+ #ifdef CONFIG_BLK_CGROUP
+ 	unsigned			use_memdelay:1;
+ #endif
++#ifdef CONFIG_PSI
++	/* Stalled due to lack of memory */
++	unsigned			in_memstall:1;
++#endif
+ #ifdef CONFIG_PAGE_OWNER
+ 	/* Used by page_owner=on to detect recursion in page tracking. */
+ 	unsigned			in_page_owner:1;
+@@ -1202,6 +1206,10 @@ struct task_struct {
+ 	kernel_siginfo_t		*last_siginfo;
+ 
+ 	struct task_io_accounting	ioac;
++#ifdef CONFIG_PSI
++	/* Pressure stall state */
++	unsigned int			psi_flags;
++#endif
+ #ifdef CONFIG_TASK_XACCT
+ 	/* Accumulated RSS usage: */
+ 	u64				acct_rss_mem1;
+@@ -1399,6 +1407,11 @@ struct task_struct {
+ 	atomic_t			tracing_graph_pause;
+ #endif
+ 
++#ifdef CONFIG_TRACING
++	/* Bitmask and counter of trace recursion: */
++	unsigned long			trace_recursion;
++#endif /* CONFIG_TRACING */
++
+ #ifdef CONFIG_KCOV
+ 	/* See kernel/kcov.c for more details. */
+ 
+@@ -1498,6 +1511,13 @@ struct task_struct {
+ 	int				mce_count;
+ #endif
+ 
++#ifdef CONFIG_KRETPROBES
++	struct llist_head               kretprobe_instances;
++#endif
++#ifdef CONFIG_RETHOOK
++	struct llist_head               rethooks;
++#endif
++
+ #ifdef CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH
+ 	/*
+ 	 * If L1D flush is supported on mm context switch
+@@ -1522,25 +1542,6 @@ struct task_struct {
+ 	struct user_event_mm		*user_event_mm;
+ #endif
+ 
+-#ifdef CONFIG_PSI
+-	/* Pressure stall state */
+-	unsigned int			psi_flags;
+-	/* Stalled due to lack of memory */
+-	unsigned			in_memstall:1;
+-#endif
+-
+-#ifdef CONFIG_TRACING
+-	/* Bitmask and counter of trace recursion: */
+-	unsigned long			trace_recursion;
+-#endif /* CONFIG_TRACING */
+-
+-#ifdef CONFIG_KRETPROBES
+-	struct llist_head               kretprobe_instances;
+-#endif
+-#ifdef CONFIG_RETHOOK
+-	struct llist_head               rethooks;
+-#endif
+-
+ 	/*
+ 	 * New fields for task_struct should be added above here, so that
+ 	 * they are included in the randomized portion of task_struct.
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 42ff5a4..f6995e4 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -299,6 +299,7 @@ struct plat_stmmacenet_data {
+ 	int rss_en;
+ 	int mac_port_sel_speed;
+ 	int has_xgmac;
++	bool vlhash_en;
+ 	u8 vlan_fail_q;
+ 	unsigned int eee_usecs_rate;
+ 	struct pci_dev *pdev;

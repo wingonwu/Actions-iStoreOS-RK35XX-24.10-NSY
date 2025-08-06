@@ -150,24 +150,8 @@ curl -o target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch \
 echo 下载 9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
 cp -f $GITHUB_WORKSPACE/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
 cp -f $GITHUB_WORKSPACE/patches-6.6/9999-modify-some-configuration-information-rkgmac-to-keep-consistent-with-imm.patch target/linux/rockchip/patches-6.6/9999-modify-some-configuration-information-rkgmac-to-keep-consistent-with-imm.patch
+cp -f $GITHUB_WORKSPACE
+/patches-6.6/9999-modify-z-driver-information-and-attempt-to-fix-eth0-rx-with-no-data.patch target/linux/rockchip/patches-6.6/9999-modify-z-driver-information-and-attempt-to-fix-eth0-rx-with-no-data.patch
 echo 下载 9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
 curl -o target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch \
   https://raw.githubusercontent.com/zhoufuli/immortalwrt-rk356x/main/target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
-
-# 验证下载文件
-
-ls -l target/linux/rockchip/patches-6.6/300-nvmem-rockchip-otp-Add-support-for-rk3568-otp.patch
-ls -l target/linux/rockchip/patches-6.6/301-arm64-dts-rockchip-rk3568-Add-otp-device-node.patch
-ls -l target/linux/rockchip/patches-6.6/304-01-arm64-dts-rockchip-add-cpuinfo-support-for-rk3328.patch
-ls -l target/linux/rockchip/patches-6.6/304-02-arm64-dts-rockchip-add-cpuinfo-support-for-rk3399.patch
-ls -l target/linux/rockchip/patches-6.6/304-03-arm64-dts-rockchip-add-cpuinfo-node-for-rk3568.patch
-ls -l target/linux/rockchip/patches-6.6/700-phy-rockchip-snps-pcie3-rk3568-update-fw-when-init.patch
-ls -l target/linux/rockchip/patches-6.6/701-irqchip-gic-v3-add-hackaround-for-rk3568-its.patch
-ls -l target/linux/rockchip/patches-6.6/703-arm64-rk3568-update-gicv3-its-and-pci-msi-map.patch
-ls -l target/linux/rockchip/patches-6.6/710-ethernet-stmicro-stmmac-Add-SGMII-QSGMII-support-for.patch
-ls -l target/linux/rockchip/patches-6.6/711-arm64-dts-rockchip-rk3568-Add-xpcs-support.patch
-ls -l target/linux/rockchip/patches-6.6/997-rockchip-naneng-combo-phy-add-sgmii-mac-sel.patch
-ls -l target/linux/rockchip/patches-6.6/9999-add-mode-gmac-number.patch
-ls -l target/linux/rockchip/patches-6.6/9999-drivers-net-ethernet-stmicro-stmmac-rockchip.patch
-ls -l target/linux/rockchip/patches-6.6/9999-ethernet-stmmac-dwmac-rk-Disable-Auto-Nego-for-1000.patch
-
